@@ -1,7 +1,8 @@
 #include <AS5600.h>
 #include <AccelStepper.h>
 #include <Wire.h>
-
+#include <SPI.h>
+#include <mcp2515.h>
 
 
 #define dir 4
@@ -9,6 +10,9 @@
 
 AS5600 enc1;
 AccelStepper stepper1(AccelStepper::DRIVER, pul,dir);
+MCP2515 mcp2515(10);
+
+struct can_frame canMsg1;
 
 
 float setaspeed(float accelera, float maxspeed) {
@@ -45,16 +49,24 @@ void setup() {
   enc1.begin();
   encoderCheck();
   setaspeed(50,200);
+  canMsg1.can_id  = 0x001;
+  canMsg1.can_dlc = 1;
+  canMsg1.data[0] = 250;
+  mcp2515.reset();
+  mcp2515.setBitrate(CAN_125KBPS);
+  mcp2515.setNormalMode();
 }
 
 
 
 void loop() {
-  stepper1.moveTo(120);
+  stepper1.moveTo(30*4);
   while (stepper1.distanceToGo() != 0)
     {
-      readEncoderAngle();
+      float a= readEncoderAngle();
+      canMsg1.data[0] = 210 ;
       stepper1.run();
-
+      mcp2515.sendMessage(&canMsg1);
+      
 }
 }
