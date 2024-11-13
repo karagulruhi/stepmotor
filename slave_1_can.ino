@@ -30,18 +30,18 @@ bool encoderCheck() {
 
 float readEncoderAngle() {
   int rawAngle = enc1.rawAngle(); 
-  float angleInDegrees = rawAngle * 0.087890625;  // Convert to degrees
+  float angleInDegrees = rawAngle * 0.087890625;  
   delay(20);
   Serial.print("\tEnd 1 Degree: ");
   Serial.println(angleInDegrees);
   canMsg1.can_id  = 0x01;
   canMsg1.can_dlc = 4;
 
-  uint32_t newAngle = angleInDegrees * 100;  // Convert angle to an integer representation
-  uint8_t byte0 = (newAngle >> 24) & 0xFF;  // First 8 bits
-  uint8_t byte1 = (newAngle >> 16) & 0xFF;  // Second 8 bits
-  uint8_t byte2 = (newAngle >> 8) & 0xFF;   // Third 8 bits
-  uint8_t byte3 = newAngle & 0xFF;          // Last 8 bits
+  uint32_t newAngle = angleInDegrees * 100;  
+  uint8_t byte0 = (newAngle >> 24) & 0xFF;  
+  uint8_t byte1 = (newAngle >> 16) & 0xFF;  
+  uint8_t byte2 = (newAngle >> 8) & 0xFF;   
+  uint8_t byte3 = newAngle & 0xFF;          
 
   canMsg1.data[0] = byte0;
   canMsg1.data[1] = byte1;
@@ -69,9 +69,9 @@ void setup() {
 
 void loop() {
   
-  stepper1.moveTo(30 * 4);  // Set target position
+  stepper1.moveTo(30 * 4);  
   while (stepper1.distanceToGo() != 0) {
-    float a = readEncoderAngle();  // Read encoder angle
+    float a = readEncoderAngle();  
     stepper1.run();  
   }
 digitalWrite(ena, HIGH);
